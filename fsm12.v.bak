@@ -1,0 +1,96 @@
+module fsm(sr_in,clk,out,rst);
+
+input sr_in,clk,rst;
+
+output out;
+
+parameter IDEAL  = 4'b0001,
+          STATE1 = 4'b0010,
+			 STATE2 = 4'b0100,
+			 STATE3 = 4'b1000;
+			 
+reg [3:0] present,next;			 
+
+always@(posedge clk)
+begin
+
+if(rst)
+begin
+
+present<=IDEAL;
+
+end
+
+else
+
+begin
+
+present<=next;
+
+end
+
+end 
+
+always@(sr_in or present)
+begin
+
+case(present)
+
+IDEAL : 
+begin
+if(sr_in)
+
+next<=STATE1; 
+
+else
+
+next<=IDEAL; 
+ 
+end
+
+
+STATE1 : 
+begin
+if(!sr_in)
+
+next<=STATE2;
+
+else
+
+ next<=STATE1;
+end
+
+STATE2 : 
+begin
+if(sr_in)
+
+next<=STATE3;
+
+else
+
+next<=IDEAL;
+ 
+end
+
+
+STATE3 : 
+begin
+if(sr_in)
+
+next<=STATE1;
+
+else
+
+next<=STATE2;
+ 
+end
+
+default : next=IDEAL;
+endcase 
+
+
+end
+
+assign out = (present==STATE3)?1:0;
+
+endmodule 
